@@ -1,0 +1,188 @@
+//merge_linklist.h
+#include<stdio.h>
+#include<stdlib.h>
+
+
+typedef struct Node
+{
+	int _data;
+	struct Node* _next;
+}Node,*pNode;
+typedef struct LinkList
+{
+	Node* pHead;
+}LinkList,*pLinkList;
+
+void InitLinkList(pLinkList plist);
+Node* BuyNode(int data);
+void PushBack(pLinkList plist,const int data);
+Node* MergeLinkList(pLinkList plist_1,pLinkList plist_2);
+void PrintLinkList(pLinkList plist);
+void PrintLinkList_Node(Node* pHead);
+void DestroyLinkList(pLinkList plist);
+
+//merge_linklist.c
+#include"merge_linklist.h"
+
+void InitLinkList(pLinkList plist)
+{
+	plist->pHead=NULL;
+}
+Node* BuyNode(int data)
+{
+	Node* newNode=(Node*)malloc(sizeof(Node));
+	if(newNode==NULL)
+	{
+		printf("memory out\n");
+		exit(EXIT_FAILURE);
+	}
+	newNode->_data=data;
+	newNode->_next=NULL;
+	return newNode;
+}
+void PushBack(pLinkList plist,const int data)
+{
+	Node* newNode=BuyNode(data);
+	if(plist->pHead==NULL)
+	{
+		plist->pHead=newNode;
+	}
+	else
+	{
+		Node* curNode=plist->pHead;
+		while(curNode->_next)
+			curNode=curNode->_next;
+
+		curNode->_next=newNode;
+	}
+}
+Node* MergeLinkList(pLinkList plist_1,pLinkList plist_2)
+{
+	Node* pHead=NULL;
+	Node* pcurNode_1=plist_1->pHead;
+	Node* pcurNode_2=plist_2->pHead;
+	Node* pcurNode_3=NULL;
+	while(pcurNode_1 && pcurNode_2)
+	{
+		if(pHead==NULL)
+		{
+			if(pcurNode_1->_data < pcurNode_2->_data)
+			{
+				pHead=pcurNode_1;
+				pcurNode_1=pcurNode_1->_next;
+				pcurNode_3=pHead;
+				pHead=pcurNode_3;
+			}	
+			else
+			{
+				pHead=pcurNode_2;	
+				pcurNode_2=pcurNode_2->_next;
+				pcurNode_3=pHead;
+				pHead=pcurNode_3;
+			}
+		}
+		else
+		{
+			if(pcurNode_1->_data < pcurNode_2->_data)
+			{
+				pcurNode_3->_next=pcurNode_1;
+				pcurNode_1=pcurNode_1->_next;
+				pcurNode_3=pcurNode_3->_next;
+			}
+			else
+			{
+				pcurNode_3->_next=pcurNode_2;
+				pcurNode_2=pcurNode_2->_next;
+				pcurNode_3=pcurNode_3->_next;				
+			}
+		}
+	}
+	if(pcurNode_1==NULL||pcurNode_2==NULL)
+	{
+		if(pcurNode_1==NULL)
+		{
+			pcurNode_3->_next=pcurNode_2;
+		}
+		else
+			pcurNode_3->_next=pcurNode_1;
+	}
+
+	return pHead;
+}
+
+void PrintLinkList(pLinkList plist)
+{
+	Node* curNode=plist->pHead;
+	while(curNode)
+	{
+		printf("%d ",curNode->_data);
+		curNode=curNode->_next;
+	}
+}
+void PrintLinkList_Node(Node* pHead)
+{
+	if(pHead!=NULL)
+	{
+		Node* pcurNode=pHead;
+		while(pcurNode)
+		{
+			printf("%d ",pcurNode->_data);
+			pcurNode=pcurNode->_next;
+		}
+	}
+}
+void DestroyLinkList(pLinkList plist)
+{
+	Node* curNode=plist->pHead;
+	Node* delNode=NULL;
+	while(curNode)
+	{
+		delNode=curNode;
+		curNode=curNode->_next;
+		free(delNode);
+		delNode=NULL;
+	}
+	plist->pHead=NULL;
+}
+
+//test.c
+#include"merge_linklist.h"
+
+
+void test()
+{
+	LinkList plist_1;
+	LinkList plist_2;	
+	InitLinkList(&plist_1);
+	InitLinkList(&plist_2);
+	PushBack(&plist_1,1);
+	PushBack(&plist_1,2);
+	PushBack(&plist_1,3);
+	PushBack(&plist_1,7);
+	PushBack(&plist_1,9);
+	PushBack(&plist_1,11);
+	PushBack(&plist_2,0);
+	PushBack(&plist_2,7);
+	PushBack(&plist_2,8);
+	PushBack(&plist_2,9);
+	PushBack(&plist_2,55);
+
+	printf("LinkList1:");
+	PrintLinkList(&plist_1);
+	printf("\n");
+	printf("LinkList2:");
+	PrintLinkList(&plist_2);
+	printf("\n");
+	
+	Node* pHead=MergeLinkList(&plist_1,&plist_2);
+	PrintLinkList_Node(pHead);
+	DestroyLinkList(&plist_1);
+	DestroyLinkList(&plist_2);
+}
+
+int main()
+{
+	test();
+	getchar();
+	return 0;
+}
