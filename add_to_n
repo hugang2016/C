@@ -1,0 +1,40 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+
+//这里我说一下我的思路
+//通过列举几个数从1到n的计算过程，我发现了一个明显的数学运算规律
+//比如： n=4 3+2+1 可以写成 sum=4+(3+1)+2
+//n=5 4+3+2+1 可以写成 sum=5+(4+1）+（3+2）
+//n=6 5+4+3+2+1 可以写成 sum=6+(5+1）+ （4+2）+ 3
+//从这里可以提炼出一个公式sum=(n/2 * n )+n/(2-n&1)
+//这里区别技术和偶数的方法就是看它的二进制的第一位是1还是0，是1的话就是奇数，反之就是偶数
+//重要的是这个公式真的不太好推，不过我推出来了
+
+int Add(int n)
+{
+	int sum=0;
+	int part1=n/2*n;
+	int part2=n/(2-n&1);
+	sum=part1+part2;
+	return sum;
+}
+
+void test_Add()
+{
+	int num;
+	int i=0;
+	printf("请输入一个数字");
+	scanf("%d",&num);
+
+	int sum=Add(num);
+	printf("sum=%d \n",sum);
+}
+
+int main()
+{
+	test_Add();
+	getchar();
+	system("pause");
+	return 0;
+}
