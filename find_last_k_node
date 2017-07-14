@@ -1,0 +1,145 @@
+//findlastknode.h
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+
+typedef struct Node
+{
+	int _data;
+	struct Node* _next;
+}Node,*pNode;
+
+typedef struct LinkList
+{
+	pNode pHead;
+
+}LinkList,*pLinkList;
+
+void InitLinkList(pLinkList plist);
+pNode BuyNode(int data);
+void PushBack(pLinkList plist,int data);
+int FindLastKNode(pLinkList plist, int k);
+void PrintLinkList(pLinkList plist);
+void DestroyLinkList(pLinkList plist);
+//findlastknode.c
+//#ifndef FINDLASTKNODE_H
+//#define FINDLASTKNODE_H
+#include"findlastknode.h"
+void InitLinkList(pLinkList plist)
+{
+	plist->pHead=NULL;
+}
+pNode BuyNode(int data)
+{
+	pNode newNode=(pNode)malloc(sizeof(Node));
+	if(newNode==NULL)
+	{
+		printf("memory is out\n");
+		exit(EXIT_FAILURE);
+	}
+	newNode->_data=data;
+	newNode->_next=NULL;
+	return newNode;
+}
+void PushBack(pLinkList plist,int data)
+{
+	if(plist->pHead==NULL)
+	{
+		plist->pHead=BuyNode(data);
+	}
+	else
+	{
+		pNode pcurNode=plist->pHead;
+		pNode newNode=BuyNode(data);
+		while(pcurNode->_next)
+		{
+			pcurNode=pcurNode->_next;
+		}
+		pcurNode->_next=newNode;
+	}
+}
+int FindLastKNode(pLinkList plist, int k)
+{
+	pNode pcurNode=plist->pHead;
+	pNode pKNode=plist->pHead;
+	assert(plist->pHead!=NULL && (k>0));
+	while(k&&pKNode!=NULL)
+	{
+		pKNode=pKNode->_next;
+		k--;
+	}
+	if(k!=0)
+	{
+		printf("k is too long!\n");
+		exit(EXIT_FAILURE);
+	}
+	else
+	{
+		while(pKNode!=NULL)
+		{
+			pcurNode=pcurNode->_next;
+			pKNode=pKNode->_next;
+		}
+		return pcurNode->_data;
+	}
+}
+void PrintLinkList(pLinkList plist)
+{
+	pNode pcurNode=plist->pHead;
+	while(pcurNode)
+	{
+		printf("%d ",pcurNode->_data);
+		pcurNode=pcurNode->_next;
+	}
+}
+void DestroyLinkList(pLinkList plist)
+{
+	if(plist->pHead!=NULL)
+	{
+		Node* curNode=plist->pHead;
+		Node* delNode=NULL;
+		while(curNode)
+		{
+			delNode=curNode;
+			curNode=curNode->_next;
+			free(delNode);
+			delNode=NULL;
+		}
+	}
+	plist->pHead=NULL;
+}
+
+//#endif 
+
+//test_findlastknode.c
+#include"findlastknode.h"
+void test_last_k_node()
+{
+	LinkList l;
+	int i=0,k_data;
+	InitLinkList(&l);
+	PushBack(&l,1);
+	PushBack(&l,2);
+	PushBack(&l,3);
+	PushBack(&l,4);
+	PushBack(&l,5);
+	PushBack(&l,6);
+	PushBack(&l,7);
+	PrintLinkList(&l);
+	printf("\n");
+	for(i=1;i<=7;i++)
+	{
+		k_data=FindLastKNode(&l,i);
+		printf("倒数第%d个数字是%d\n",i,k_data);
+	}
+	DestroyLinkList(&l);
+
+}
+
+int main()
+{
+	test_last_k_node();
+	getchar();
+	system("pause");
+	return 0;
+}
