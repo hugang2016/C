@@ -1,0 +1,139 @@
+//reverseLinkList.h
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+
+typedef struct Node
+{
+	int _data;
+	struct Node* _next;
+}Node,*pNode;
+
+typedef struct LinkList
+{
+	pNode pHead;
+
+}LinkList,*pLinkList;
+
+void InitLinkList(pLinkList plist);
+pNode BuyNode(int data);
+void PushBack(pLinkList plist,int data);
+void InsertToHead(pLinkList plist,int data);
+void ReverseLinkList(pLinkList psourcelist,pLinkList pdestlist);
+void PrintLinkList(pLinkList plist);
+void DestroyLinkList(pLinkList plist);
+
+//reverseLinkList.c
+#include"reverseLinkList.h"
+void InitLinkList(pLinkList plist)
+{
+	plist->pHead=NULL;
+}
+pNode BuyNode(int data)
+{
+	pNode newNode=(pNode)malloc(sizeof(Node));
+	if(newNode==NULL)
+	{
+		printf("memory is out\n");
+		exit(EXIT_FAILURE);
+	}
+	newNode->_data=data;
+	newNode->_next=NULL;
+	return newNode;
+}
+void PushBack(pLinkList plist,int data)
+{
+	if(plist->pHead==NULL)
+	{
+		plist->pHead=BuyNode(data);
+	}
+	else
+	{
+		pNode pcurNode=plist->pHead;
+		pNode newNode=BuyNode(data);
+		while(pcurNode->_next)
+		{
+			pcurNode=pcurNode->_next;
+		}
+		pcurNode->_next=newNode;
+	}
+}
+void InsertToHead(pLinkList plist,int data)
+{
+	if(plist->pHead==NULL)
+	{
+		plist->pHead=BuyNode(data);
+	}
+	else
+	{
+		pNode pnewhead=BuyNode(plist->pHead->_data);
+		pnewhead->_next=plist->pHead->_next;
+		plist->pHead->_data=data;
+		plist->pHead->_next=pnewhead;
+	}
+}
+void ReverseLinkList(pLinkList psourcelist,pLinkList pdestlist)
+{
+	pNode pcsNode=psourcelist->pHead;
+	assert(psourcelist->pHead!=NULL);
+	while(pcsNode!=NULL)
+	{
+		InsertToHead(pdestlist,pcsNode->_data);
+		pcsNode=pcsNode->_next;	
+	}
+}
+void PrintLinkList(pLinkList plist)
+{
+	pNode pcurNode=plist->pHead;
+	while(pcurNode)
+	{
+		printf("%d ",pcurNode->_data);
+		pcurNode=pcurNode->_next;
+	}
+}
+void DestroyLinkList(pLinkList plist)
+{
+	if(plist->pHead!=NULL)
+	{
+		Node* curNode=plist->pHead;
+		Node* delNode=NULL;
+		while(curNode)
+		{
+			delNode=curNode;
+			curNode=curNode->_next;
+			free(delNode);
+			delNode=NULL;
+		}
+	}
+	plist->pHead=NULL;
+}
+
+//test_reverseLinkList.c
+#include"reverseLinkList.h"
+
+void test_LinkList()
+{
+	LinkList l;
+	LinkList k;	
+	InitLinkList(&l);
+	InitLinkList(&k);	
+	PushBack(&l,1);
+	PushBack(&l,2);
+	PushBack(&l,3);
+	PushBack(&l,4);
+	PushBack(&l,5);
+	PrintLinkList(&l);
+	printf("\n");
+	ReverseLinkList(&l,&k);
+	PrintLinkList(&k);
+	DestroyLinkList(&l);
+	DestroyLinkList(&k);	
+}
+int main()
+{
+	test_LinkList();
+	getchar();
+	return 0;
+}
+
