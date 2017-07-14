@@ -1,0 +1,27 @@
+int add(int number_1,int number_2)
+{
+	int sum=0;
+	int carry=0;
+	while(number_2!=0)
+	{
+		sum=number_1^number_2;
+		carry=(number_1&number_2)<<1;
+		number_1=sum;
+		number_2=carry;
+	}
+	return number_1;
+}
+int main()
+{
+	int number_1,number_2,sum;
+	printf("请输入第一个数字：");
+	scanf("%d",&number_1);
+	printf("\n");
+	printf("请输入第二个数字：");
+	scanf("%d",&number_2);
+	printf("\n");	
+	sum=add(number_1,number_2);
+	printf("sum=%d\n",sum);
+	system("pause");
+	return 0;
+}
