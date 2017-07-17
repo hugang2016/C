@@ -1,0 +1,456 @@
+//isLinkListCrossing.h
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+#include<stack>
+using namespace std;
+typedef struct Node
+{
+	int _data;
+	struct Node* _next;
+}Node,*pNode;
+
+typedef struct LinkList
+{
+	pNode pHead;
+
+}LinkList,*pLinkList;
+
+void InitLinkList(pLinkList plist);
+pNode BuyNode(int data);
+void PushBack(pLinkList plist,int data);
+void PushBack_Node(pLinkList plist,Node* pnode);
+Node* FindEntryNode(pLinkList plist);
+Node* FindNode(pLinkList plist,int data);
+Node* FindMeetNodeWithRing(pLinkList plist_1,pLinkList plist_2);
+int LengthOfLinkListWithRing(pLinkList plist);
+int IsCircle(pLinkList plist);
+Node* IsLinkListCrossing(pLinkList plist_1,pLinkList plist_2);
+int IsLinkListWithRingCrossing(pLinkList plist_1,pLinkList plist_2);
+void PrintLinkList(pLinkList plist);
+void DestroyLinkList(pLinkList plist);
+
+//isLinkListCrossing.cpp
+#include"isLinkListcrossing_.h"
+
+void InitLinkList(pLinkList plist)
+{
+	plist->pHead=NULL;
+}
+pNode BuyNode(int data)
+{
+	pNode newNode=(pNode)malloc(sizeof(Node));
+	if(newNode==NULL)
+	{
+		printf("memory is out\n");
+		exit(EXIT_FAILURE);
+	}
+	newNode->_data=data;
+	newNode->_next=NULL;
+	return newNode;
+}
+void PushBack(pLinkList plist,int data)
+{
+	if(plist->pHead==NULL)
+	{
+		plist->pHead=BuyNode(data);
+	}
+	else
+	{
+		pNode pcurNode=plist->pHead;
+		pNode newNode=BuyNode(data);
+		while(pcurNode->_next)
+		{
+			pcurNode=pcurNode->_next;
+		}
+		pcurNode->_next=newNode;
+	}
+}
+void PushBack_Node(pLinkList plist,Node* pnode)
+{
+	Node* pcurNode=NULL;
+	assert(plist);
+	pcurNode=plist->pHead;
+	if(plist->pHead==NULL)
+	{
+		plist->pHead=pnode;
+	}
+	else
+	{
+		while(pcurNode->_next != NULL)
+		{
+			pcurNode=pcurNode->_next;
+		}
+		pcurNode->_next=pnode;
+	}
+}
+Node* FindNode(pLinkList plist,int data)
+{
+	Node* pcurNode=NULL;
+	assert(plist);
+	pcurNode=plist->pHead;
+	while((pcurNode->_data!=data)&&(pcurNode->_next!=NULL))
+	{
+		pcurNode=pcurNode->_next;
+	}
+	if(pcurNode->_next==NULL)
+	{
+		if(pcurNode->_data==data)
+		{
+			return pcurNode;
+		}
+	}
+	if(pcurNode->_data==data)
+		return pcurNode;
+	else
+	{
+		printf("node is not exit");
+		return NULL;
+	}
+}
+Node* IsLinkListCrossing(pLinkList plist_1,pLinkList plist_2)
+{
+	Node* pcurNode_1=NULL;
+	Node* pcurNode_2=NULL;
+	assert(plist_1&&plist_2);
+	pcurNode_1=plist_1->pHead;
+	pcurNode_2=plist_2->pHead;
+	int len_1=0,len_2=0;
+	int diff=0;
+	while(pcurNode_1->_next!=NULL)
+	{
+		pcurNode_1=pcurNode_1->_next;
+		len_1++;
+	}
+	while(pcurNode_2->_next!=NULL)
+	{
+		pcurNode_2=pcurNode_2->_next;
+		len_2++;
+	}
+	if(pcurNode_1!=pcurNode_2)
+		return NULL;
+	
+	diff=abs(len_1-len_2);
+	pcurNode_1=plist_1->pHead;
+	pcurNode_2=plist_2->pHead;
+	if(len_1>len_2)
+	{
+		while(diff--)
+		{
+			pcurNode_1=pcurNode_1->_next;
+		}
+	}
+	else
+	{
+		while(diff--)
+		{
+			pcurNode_2=pcurNode_2->_next;
+		}
+	}
+	while(pcurNode_1!=pcurNode_2)
+	{
+		pcurNode_1=pcurNode_1->_next;
+		pcurNode_2=pcurNode_2->_next;
+	}
+	return pcurNode_1;
+}
+int LengthOfLinkListWithRing(pLinkList plist)
+{
+	pNode pslowNode=NULL;
+	pNode pfastNode=NULL;
+	int lengthBeforeMeet=0;
+	int lengthOfCircle=0;
+	pNode pmeetNode=NULL;
+	assert(plist);
+	pslowNode=plist->pHead;
+	pfastNode=plist->pHead;
+	while(1)
+	{
+		lengthBeforeMeet++;
+		pslowNode=pslowNode->_next;
+		pfastNode=pfastNode->_next->_next;
+		if(pslowNode==pfastNode)
+			break;
+	}
+	pmeetNode=pslowNode;
+	while(1)
+	{
+		lengthOfCircle++;
+		pfastNode=pfastNode->_next;
+		if(pmeetNode==pfastNode)
+			break;
+	}
+	return lengthOfCircle+lengthBeforeMeet;
+}
+Node* FindEntryNode(pLinkList plist)
+{
+	pNode pslowNode=NULL;
+	pNode pfastNode=NULL;
+	pNode pstartNode=NULL;
+	pNode pmeetNode=NULL;
+	assert(plist);
+	pstartNode=plist->pHead;
+	pslowNode=plist->pHead;
+	pfastNode=plist->pHead;
+	while(1)
+	{
+		pslowNode=pslowNode->_next;
+		pfastNode=pfastNode->_next->_next;
+		if(pslowNode==pfastNode)
+			break;
+	}
+	pmeetNode=pslowNode;
+	while(pstartNode!=pmeetNode)
+	{
+		pstartNode=pstartNode->_next;
+		pmeetNode=pmeetNode->_next;
+	}
+	return pmeetNode;
+}
+//下面这个函数很重要
+Node* FindMeetNodeWithRing(pLinkList plist_1,pLinkList plist_2)
+{
+	stack<Node*> s1;
+	stack<Node*> s2;
+
+	Node* pentryNode_list_1=NULL;
+	Node* pentryNode_list_2=NULL;
+	Node* pcurNode_list_1=NULL;
+	Node* pcurNode_list_2=NULL;
+	Node* pmeetNode=NULL;
+
+	assert(plist_1&&plist_2);
+	pcurNode_list_1=plist_1->pHead;
+	pcurNode_list_2=plist_2->pHead;
+	pentryNode_list_1=FindEntryNode(plist_1);
+	pentryNode_list_2=FindEntryNode(plist_2);
+	if(pentryNode_list_1==pentryNode_list_2)//说明交点在环外
+	{
+		if(pcurNode_list_1!=pentryNode_list_1 && pcurNode_list_2!=pentryNode_list_2)
+		{
+			while(pcurNode_list_1!=pentryNode_list_1)
+			{
+				s1.push(pcurNode_list_1); 
+				pcurNode_list_1=pcurNode_list_1->_next;
+			}
+			s1.push(pcurNode_list_1); 
+
+			while(pcurNode_list_2!=pentryNode_list_2)
+			{
+				s2.push(pcurNode_list_2);
+				pcurNode_list_2=pcurNode_list_2->_next;
+			}
+			s2.push(pcurNode_list_2);
+		}
+		while(s1.top()==s2.top())
+		{
+			if(s1.size()==1||s2.size()==1)//这么做是为了防止一个链表链到另一个链表表头
+			{
+				if(s1.size()==1)
+					return s1.top();
+				else
+					return s2.top();
+			}
+			pmeetNode=s1.top();
+			s1.pop();
+			s2.pop();
+		}
+		return pmeetNode;
+	}
+	else//说明交点在环内，任意返回环上的一个节点即可
+		return pentryNode_list_1;
+}
+
+int IsCircle(pLinkList plist)
+{
+	pNode pslowNode=NULL;
+	pNode pfastNode=NULL;
+	assert(plist);
+	pslowNode=plist->pHead;
+	pfastNode=plist->pHead->_next;
+	while(pslowNode!=NULL && pfastNode!=NULL)
+	{
+		pslowNode=pslowNode->_next;
+		pfastNode=pfastNode->_next;
+		if(pslowNode==pfastNode)
+			return 0;
+		else if(pslowNode==NULL||pfastNode==NULL)
+			return -1;
+		else
+			pfastNode=pfastNode->_next;
+	}
+	return -1;
+}
+int IsLinkListWithRingCrossing(pLinkList plist_1,pLinkList plist_2)
+{
+	int isCircle_list_1=0,isCircle_list_2=0;
+	Node* pentryNode=NULL;
+	Node* pmoveNode=NULL;
+	int isCircle=0;
+	assert(plist_1&&plist_2);
+	isCircle_list_1=IsCircle(plist_1);
+	isCircle_list_2=IsCircle(plist_2);
+	if(isCircle_list_1==0&&isCircle_list_2==0)
+	{
+		pentryNode=FindEntryNode(plist_1);
+		pmoveNode=pentryNode;
+		while(pmoveNode->_next!=pentryNode)
+		{
+			pmoveNode=pmoveNode->_next;
+		}
+		pmoveNode->_next=NULL;
+		isCircle=IsCircle(plist_2);
+		if(isCircle!=0)
+		{
+			pmoveNode->_next=pentryNode;
+			return 0;
+		}
+		else
+		{
+			pmoveNode->_next=pentryNode;
+			return -1;
+		}
+	}
+	else
+		return -1;
+}
+void PrintLinkList(pLinkList plist)
+{
+	pNode pcurNode=plist->pHead;
+	while(pcurNode)
+	{
+		printf("%d ",pcurNode->_data);
+		pcurNode=pcurNode->_next;
+	}
+}
+void DestroyLinkList(pLinkList plist)
+{
+	if(plist->pHead!=NULL)
+	{
+		Node* curNode=plist->pHead;
+		Node* delNode=NULL;
+		while(curNode)
+		{
+			delNode=curNode;
+			curNode=curNode->_next;
+			free(delNode);
+			delNode=NULL;
+		}
+	}
+	plist->pHead=NULL;
+}
+
+//test_isLinkListCrossing.c
+#include"isLinkListcrossing_.h"
+
+
+void test_isCircle()
+{
+	LinkList list_1;
+	Node* find_Node=NULL;
+	int isCircle=0;
+	InitLinkList(&list_1);
+	PushBack(&list_1,1);
+	PushBack(&list_1,2);
+	PushBack(&list_1,3);
+	PushBack(&list_1,4);
+	PushBack(&list_1,5);
+	PushBack(&list_1,6);
+	PrintLinkList(&list_1);
+	printf("\n");	
+	find_Node=FindNode(&list_1,3);
+	PushBack_Node(&list_1,find_Node);
+	isCircle=IsCircle(&list_1);
+	if(isCircle==0)
+		printf("list have circle\n");
+	else
+		printf("there is no circle in list\n");
+}
+void test_findEntryNode()
+{
+	LinkList list_1;
+	Node* find_Node=NULL;
+	Node* meetNode=NULL;
+	int isCircle=0;
+	InitLinkList(&list_1);
+	PushBack(&list_1,1);
+	PushBack(&list_1,2);
+	PushBack(&list_1,3);
+	PushBack(&list_1,4);
+	PushBack(&list_1,5);
+	PushBack(&list_1,6);
+	PrintLinkList(&list_1);
+	printf("\n");	
+	find_Node=FindNode(&list_1,3);
+	PushBack_Node(&list_1,find_Node);
+	isCircle=IsCircle(&list_1);
+	if(isCircle==0)
+	{
+		printf("list have circle\n");
+		meetNode=FindEntryNode(&list_1);
+		printf("meetNode is %d\n",meetNode->_data);
+	} 
+	else
+		printf("there is no circle in list\n");
+	
+}
+void test_isLinkListcrossing_witoutRing()
+{
+	LinkList list_1;
+	LinkList list_2;
+	int isCrossing=0;
+	Node* find_Node=NULL;
+	InitLinkList(&list_1);
+	InitLinkList(&list_2);
+	PushBack(&list_1,1);
+	PushBack(&list_1,2);
+	PushBack(&list_1,3);
+	PushBack(&list_1,4);
+	PushBack(&list_1,5);
+	PushBack(&list_1,6);
+	PrintLinkList(&list_1);
+	printf("\n");
+	find_Node=FindNode(&list_1,4);
+	PushBack_Node(&list_1,find_Node);	
+	printf("\n");
+	PushBack(&list_2,7);
+	PushBack(&list_2,8);
+	PushBack(&list_2,9);
+	PushBack(&list_2,10);
+	find_Node=FindNode(&list_1,6);
+
+	PushBack_Node(&list_2,find_Node);
+	printf("\n"); 
+	isCrossing=IsLinkListWithRingCrossing(&list_1,&list_2);
+
+	if(isCrossing==0)
+	{
+		find_Node=FindMeetNodeWithRing(&list_1,&list_2);
+		printf("LinkLists are crossing,node is : %d \n",find_Node->_data);
+	}
+	else
+	{
+		printf("LinkLists are not crossing\n");
+	}
+}
+//void test_isLinkListcrossing_withRing()
+//{
+//	int isCrossing=0;
+//	isCrossing=IsLinkListWithRingCrossing( &list_1,&list_2);
+//	if(isCrossing==0)
+//	{
+//		printf("the tow list do not cross!\n");
+//		
+//	}
+//	else
+//		printf("the tow list do not cross!\n");
+//}
+int main()
+{
+	/*test_isLinkListcrossing_witoutRing();*/
+	/*test_isCircle();*/
+	/*test_findEntryNode();*/
+	test_isLinkListcrossing_witoutRing();
+	system("pause");
+	return 0;
+}
